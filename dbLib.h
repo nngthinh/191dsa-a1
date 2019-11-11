@@ -26,8 +26,6 @@
  *       in this assignment. The below structures are just some suggestions.
  */
 
-
-
 struct date {
 	string date;
 };
@@ -75,8 +73,6 @@ struct TSystem {
 	int id;
 	int city_id;
 	string name;
-
-	TSystem* next;
 };
 
 struct TTrack {
@@ -140,7 +136,6 @@ public:
 	size_t getsize_TrackLine() {
 		return TrackLine->getSize();
 	}
-
 	void setData_City(TCity& City) {
 		this->City->push_back(City);
 	}
@@ -164,91 +159,154 @@ public:
 	}
 
 	/* Requested functions */
+	
+	int* find_CityID_City_CityName(string& city_name) {
+		
+		// Create pointer 
+		int* p_city_id = new int(-1);
+		string* p_city_name = &city_name;
 
-	int find_CityID_City_CityName(string& city_name) {
-		size_t getSize = City->getSize();
-		for (size_t i = 0; i < getSize; i++) {
-			if (City->at(i).name == city_name) {
-				return City->at(i).id;
-			}
-		}
-		return -1;
+		// Traverse
+		City->traverse(
+			[](TCity& City, void*& city_name, void*& city_id) -> bool {
+				if (City.name == *(string*)city_name) {
+					*(int*)city_id = City.id;
+					return true;
+				}
+				return false;
+			}, (void*&)p_city_name, (void*&)p_city_id);
+
+		return p_city_id; // -1 or p_city_id
 	}
 
-	int count_numLine_Line_CityID(int& city_id) {
-		int count = 0;
-		size_t getSize = Line->getSize();
-		for (size_t i = 0; i < getSize; i++) {
-			if (Line->at(i).city_id == city_id) count++;
+	int* count_numLine_Line_CityID(int& city_id) {
+
+		// Create pointer 
+		int* p_count = new int (0);
+		int* p_city_id = &city_id; 
+
+		// Traverse
+		if (city_id != -1) {
+			Line->traverse(
+				[](TLine& Line, void*& city_id, void*& count) -> bool {
+					if (Line.city_id == *(int*)city_id)
+						(*(int*)count)++;
+					return false;
+				}, (void*&)p_city_id, (void*&)p_count);
 		}
-		if (count == 0) return -1;
-		return count;
+		if (*p_count == 0) *p_count = -1;
+		return p_count; // -1 or p_count 
 	}
 
 	int* list_StationID_Station_CityID(int& city_id, int& N) {
-		int count = 0;
+		
+		N = 0;
+
+		// Create pointer 
+		int* p_count = &N;
+		int* p_city_id = &city_id;
 		L1List<int>* arr_list = new L1List<int>;
-		int temp;
-		size_t getSize = Station->getSize();
-		for (size_t i = 0; i < getSize; i++) {
-			if (Station->at(i).city_id == city_id) {
-				temp = Station->at(i).id;
-				arr_list->push_back(temp);
-				count++;
-			}
+
+		if (city_id != -1) {
+			Station->traverse(
+				[](TStation& Station, void*& city_id, void*& arr_list) -> bool {
+					if (Station.city_id == *(int*)city_id) {
+						((L1List<int>*)arr_list)->push_back(Station.id);
+					}
+					return false;
+				}, (void*&)p_city_id, (void*&)arr_list);
 		}
-		int* arr = new int[count];
-		for (int i = 0; i < count; i++) {
-			arr[i] = arr_list->at(i);
+
+		// Create an array of int
+		N = arr_list->getSize(); 
+
+		int* arr_int = new int[N];
+		if (N > 0) {
+			N = 0;
+			arr_list->traverse(
+				[](int& list, void*& count, void*& arr_int) -> bool {
+					((int*)arr_int)[(*(int*)count)++] = list;
+					return false;
+				}, (void*&)p_count, (void*&)arr_int);
 		}
-		arr_list->clean();
-		arr_list = NULL;
-		N = count;
-		return arr;
+
+		arr_list->clean(); // Clean up the temp list
+
+		return arr_int;
 	}
 
 	int* list_LineID_Line_CityID(int& city_id, int& N) {
-		int count = 0;
+		
+		N = 0;
+
+		// Create pointer 
+		int* p_count = &N;
+		int* p_city_id = &city_id;
 		L1List<int>* arr_list = new L1List<int>;
-		int temp;
-		size_t getSize = Line->getSize();
-		for (size_t i = 0; i < getSize; i++) {
-			if (Line->at(i).city_id == city_id) {
-				temp = Line->at(i).id;
-				arr_list->push_back(temp);
-				count++;
-			}
+
+		if (city_id != -1) {
+			Line->traverse(
+				[](TLine& Line, void*& city_id, void*& arr_list) -> bool {
+					if (Line.city_id == *(int*)city_id) {
+						((L1List<int>*)arr_list)->push_back(Line.id);
+					}
+					return false;
+				}, (void*&)p_city_id, (void*&)arr_list);
 		}
-		int* arr = new int[count];
-		for (int i = 0; i < count; i++) {
-			arr[i] = arr_list->at(i);
+
+		// Create an array of int
+		N = arr_list->getSize();
+
+		int* arr_int = new int[N];
+		if (N > 0) {
+			N = 0;
+			arr_list->traverse(
+				[](int& list, void*& count, void*& arr_int) -> bool {
+					((int*)arr_int)[(*(int*)count)++] = list;
+					return false;
+				}, (void*&)p_count, (void*&)arr_int);
 		}
-		arr_list->clean();
-		arr_list = NULL;
-		N = count;
-		return arr;
+
+		arr_list->clean(); // Clean up the temp list
+
+		return arr_int;
 	}
 
 	int* list_StationID_StationLine_LineID(int& line_id, int& N) {
-		int count = 0;
+		
+		N = 0;
+
+		// Create pointer 
+		int* p_count = &N;
+		int* p_line_id = &line_id;
 		L1List<int>* arr_list = new L1List<int>;
-		int temp;
-		size_t getSize = StationLine->getSize();
-		for (size_t i = 0; i < getSize; i++) {
-			if (StationLine->at(i).line_id == line_id) {
-				temp = StationLine->at(i).station_id;
-				arr_list->push_back(temp);
-				count++;
-			}
+
+		if (line_id != -1) {
+			StationLine->traverse(
+				[](TStationLine& StationLine, void*& line_id, void*& arr_list) -> bool {
+					if (StationLine.line_id == *(int*)line_id) {
+						((L1List<int>*)arr_list)->push_back(StationLine.station_id);
+					}
+					return false;
+				}, (void*&)p_line_id, (void*&)arr_list);
 		}
-		int* arr = new int[count];
-		for (int i = 0; i < count; i++) {
-			arr[i] = arr_list->at(i);
+
+		// Create an array of int
+		N = arr_list->getSize();
+
+		int* arr_int = new int[N];
+		if (N > 0) {
+			N = 0;
+			arr_list->traverse(
+				[](int& list, void*& count, void*& arr_int) -> bool {
+					((int*)arr_int)[(*(int*)count)++] = list;
+					return false;
+				}, (void*&)p_count, (void*&)arr_int);
 		}
-		arr_list->clean();
-		arr_list = NULL;
-		N = count;
-		return arr;
+
+		arr_list->clean(); // Clean up the temp list
+
+		return arr_int;
 	}
 
 	int find_StationID_Station_StationName(string& station_name) {
@@ -366,17 +424,56 @@ public:
 	void set_IDmax_Station(int& id_max) {
 		Station->set_IDmax(id_max);
 	}
+
+	/* Added functions */
+
+	int ALSP() {
+		size_t number = 0;
+		size_t numberTotal = getsize_Station();
+		int total = 0;
+		for (size_t i = 0; i < getsize_Station(); i++) {
+			int station_id = Station->at(i).id;
+			cout << left << setw(5) << number++ << " of " << numberTotal << " || station_id = " << station_id;
+			string point = find_StationGeometry_Station_StationID(station_id);
+			int track_id;
+			int output = find_StationIDX_Track_StationGeometry(point, track_id);
+			if (output != -1) cout << " || track_id = " << track_id << " | INDEX = " << output << " | POINT = " << point << endl;
+			else cout << " || Not found\n";
+		}
+		if (total == 0) return -1;
+		return total;
+	}
+
+	int find_StationIDX_Track_StationGeometry(string& point, int& track_id) {
+		if (point == "\0") return -1;
+		size_t getSize = Track->getSize();
+		for (size_t i = 0; i < getSize; i++) {
+			int count = 0;
+			TTrack* pTemp = &Track->at(i);
+			string cell_temp;
+			stringstream ss_temp;
+			ss_temp.str(pTemp->geometry);
+			while (getline(ss_temp, cell_temp, ',')) {
+				if (cell_temp == point) {
+					track_id = pTemp->id;
+					return count;
+				}
+				count++;
+			}
+		}
+		return -1;
+	}
 };
 
 void LoadData(void*&);
 void ReleaseData(void*&);
 
-void LoadData_City(stringstream&, TCity*&);
-void LoadData_Line(stringstream&, TLine*&);
-void LoadData_StationLine(stringstream&, TStationLine*&);
-void LoadData_Station(stringstream&, TStation*&);
-void LoadData_System(stringstream&, TSystem*&);
-void LoadData_Track(stringstream&, TTrack*&);
-void LoadData_TrackLine(stringstream&, TTrackLine*&);
+void createData_City(stringstream&, TCity&);
+void createData_Line(stringstream&, TLine&);
+void createData_StationLine(stringstream&, TStationLine&);
+void createData_Station(stringstream&, TStation&);
+void createData_System(stringstream&, TSystem&);
+void createData_Track(stringstream&, TTrack&);
+void createData_TrackLine(stringstream&, TTrackLine&);
 
 #endif //DSA191_A1_DBLIB_H

@@ -23,7 +23,7 @@ int main() {
 	a = clock(); // Added
     LoadData(pData);
 	b = clock(); // Added
-	cout << "Time:" << (double)(b - a) / CLOCKS_PER_SEC << endl; // Added
+	cout << "Time:" << (double(b) - double(a)) / CLOCKS_PER_SEC << endl; // Added
     assert(pData != nullptr);
     cout << fixed << setprecision(8);
     string req;
@@ -44,7 +44,7 @@ int main() {
 		PrintReqOutput<int>(req.data(), (int*)pOutput, N);
         delete [] (int*)pOutput;
         pOutput = nullptr;
-		cout << "\nTime:" << (double)(b - a) / CLOCKS_PER_SEC << endl; // Added
+		cout << "Time:" << (double(b) - double(a)) / CLOCKS_PER_SEC << endl; // Added
     }
 
     ReleaseData(pData);

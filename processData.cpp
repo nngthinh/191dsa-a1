@@ -22,8 +22,6 @@ void Initialization() {
 
 void Finalization() {
     // Release your data before exiting
-	cout << "Hello";
-	cout << endl;
 }
 
 void ProcessRequest(const char* pRequest, void* pData, void* &pOutput, int &N) {
@@ -50,23 +48,26 @@ void ProcessRequest(const char* pRequest, void* pData, void* &pOutput, int &N) {
 		}
 		//CL <city_name>
 		else {
-			pOutput = new int* ();
-			int city_id = Dataset->find_CityID_City_CityName(cell1);
-			*(int*)pOutput = Dataset->count_numLine_Line_CityID(city_id);
+			int* city_id = Dataset->find_CityID_City_CityName(cell1);
+			pOutput = Dataset->count_numLine_Line_CityID(*city_id);
+			if (city_id) delete city_id; // Remove unnecessary pointer 
 			N = 1;
 		}
 	}
+	
 	else if (request == "LSC") {
 		//LSC <city_name>
 		getline(ss, cell1);
-		int city_id = Dataset->find_CityID_City_CityName(cell1);
-		pOutput = Dataset->list_StationID_Station_CityID(city_id, N);
+		int* city_id = Dataset->find_CityID_City_CityName(cell1);
+		pOutput = Dataset->list_StationID_Station_CityID(*city_id, N); 
+		if (city_id) delete city_id; // Remove unnecessary pointer 
 	}
 	else if (request == "LLC") {
 		//LLC <city_name>
 		getline(ss, cell1);
-		int city_id = Dataset->find_CityID_City_CityName(cell1);
-		pOutput = Dataset->list_LineID_Line_CityID(city_id, N);
+		int *city_id = Dataset->find_CityID_City_CityName(cell1);
+		pOutput = Dataset->list_LineID_Line_CityID(*city_id, N);
+		if (city_id) delete city_id; // Remove unnecessary pointer 
 	}
 	else if (request == "LSL") {
 		//LSL <line_id>
@@ -77,8 +78,7 @@ void ProcessRequest(const char* pRequest, void* pData, void* &pOutput, int &N) {
 	else if (request == "FC") {
 		//FC <city_name>
 		getline(ss, cell1);
-		pOutput = new int* ();
-		*(int*)pOutput = Dataset->find_CityID_City_CityName(cell1);
+		pOutput = (void*)Dataset->find_CityID_City_CityName(cell1);
 		N = 1;
 	}
 	else if (request == "FS") {
@@ -141,5 +141,12 @@ void ProcessRequest(const char* pRequest, void* pData, void* &pOutput, int &N) {
 		*(int*)pOutput = Dataset->remove_Station_StationLine_StationID_LineID(station_id, line_id);
 		N = 1;
 	}
+	
+	//Added
+	else if (request == "ASLP") { 
+		//ASLP
+		pOutput = new int* ();
+		*(int*)pOutput = Dataset->ALSP();
+		N = 1;
+	}
 }
-

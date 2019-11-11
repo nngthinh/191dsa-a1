@@ -73,15 +73,22 @@ public:
 
 	void    reverse();
 
-	void    traverse(void (*op)(T& trav)) {
-		// TODO: Your code goes here
-		
-
+	void    traverse(bool (op)(T&, void*&, void*&), void*& pParam_1, void*& pParam_2) {
+		L1Item<T>* _pCur = _pHead;
+		while (_pCur != NULL) {
+			if ((op)(_pCur->data, pParam_1, pParam_2)) break;
+			_pCur = _pCur->pNext;
+		}
+		return;
 	}
-	void    traverse(void (*op)(T&, void*), void* pParam) {
-		// TODO: Your code goes here
+	void    traverse(bool (op)(T&, void*&, void*&, void*&), void*& pParam_1, void*& pParam_2, void*& pParam_3) {
+		L1Item<T>* _pCur = _pHead;
+		while (_pCur != NULL) {
+			if ((op)(_pCur->data, pParam_1, pParam_2, pParam_3)) break;
+			_pCur = _pCur->pNext;
+		}
+		return;
 	}
-
 	int get_IDmax() {
 		return id_max;
 	}
@@ -94,63 +101,58 @@ public:
 
 template <class T>
 void L1List<T>::clean() {
-	if (!isEmpty()) {
-		L1Item<T>* _pCur = _pHead;
-		while (!_pCur) {
-			_pCur = _pCur->pNext;
-			delete _pHead;
-			_pHead = _pCur;
-		}
-		_pCur = nullptr;
+	if (isEmpty()) return;
+	L1Item<T>* _pCur = _pHead;
+	L1Item<T>* _pNext;
+	while (_pCur != NULL) {
+		_pNext = _pCur->pNext;
+		delete _pCur;
+		_pCur = _pNext;
 	}
-	_pHead = nullptr;
-	_pTail = nullptr;
+	_pHead = NULL;
+	_pTail = NULL;
 }
 
 template <class T>
 T& L1List<T>::at(int i) {
-	if (_size > 0) {
-		L1Item<T>* _pCur = _pHead;
-		int count = 0;
-		while (count < i) {
-			_pCur = _pCur->pNext;
-			count++;
-		}
-		return _pCur->data;
+	if (isEmpty()) return _pHead->data;
+	L1Item<T>* _pCur = _pHead;
+	int count = 0;
+	while (count < i) {
+		_pCur = _pCur->pNext;
+		count++;
 	}
-	return _pHead->data;
+	return _pCur->data;
 }
 
 template <class T>
 T& L1List<T>::operator[](int i) {
-	if (_size > 0) {
-		L1Item<T>* _pCur = _pHead;
-		int count = 0;
-		while (count < i) {
-			_pCur = _pCur->pNext;
-			count++;
-		}
-		return _pCur;
+	if (isEmpty()) return NULL;
+	L1Item<T>* _pCur = _pHead;
+	int count = 0;
+	while (count < i) {
+		_pCur = _pCur->pNext;
+		count++;
 	}
-	return NULL;
+	return _pCur;
 }
 
 template <class T>
 bool L1List<T>::find(T& a, int& idx) {
-	if (_size > 0) {
-		L1Item<T>* _pCur = _pHead;
-		int count = 0;
-		while (_pCur->data != a) {
-			_pCur = _pCur->pNext;
-			count++;
-		}
-		if (_pCur->data == a) {
-			idx = count;
-			return true;
-		}
+	if (isEmpty()) {
+		idx = -1;
+		return false;
 	}
-	idx = -1;
-	return false;
+	L1Item<T>* _pCur = _pHead;
+	int count = 0;
+	while (_pCur->data != a) {
+		_pCur = _pCur->pNext;
+		count++;
+	}
+	if (_pCur->data == a) {
+		idx = count;
+		return true;
+	}	
 }
 
 template <class T>
@@ -184,36 +186,31 @@ int L1List<T>::insert(int i, T& a) {
 
 template <class T>
 int L1List<T>::remove(int i) {
-	if (_size > 0 && i < _size) {
-		L1Item<T>* _pCur, * _pPre;
-		if (i == 0) {
-			_pCur = _pHead;
-			_pHead = _pHead->pNext;
-		}
-		else {
-			_pPre = _pHead;
-			for (int j = 0; j < i - 1; j++) {
-				_pPre = _pPre->pNext;
-			}
-			_pCur = _pPre->pNext;
-			_pPre->pNext = _pCur->pNext;
-		}
-		delete _pCur;
-		_size--;
-		return 0;
+	if (_size < 0 || i > _size - 1) return -1;
+	L1Item<T>* _pCur, * _pPre;
+	if (i == 0) {
+		_pCur = _pHead;
+		_pHead = _pHead->pNext;
 	}
-	return -1;
+	else {
+		_pPre = _pHead;
+		for (int j = 0; j < i - 1; j++) {
+			_pPre = _pPre->pNext;
+		}
+		_pCur = _pPre->pNext;
+		_pPre->pNext = _pCur->pNext;
+	}
+	delete _pCur;
+	_size--;
+	return 0;
 }
 
 /// Insert item to the end of the list
 /// Return 0 if success, -1 otherwise
 template <class T>
 int L1List<T>::push_back(T& a) {
-	// TODO: Your code goes here
-	L1Item<T>* _pa = new L1Item<T>;
-	_pa->data = a;
-
-	if (_size == 0) {
+	L1Item<T>* _pa = new L1Item<T>(a);
+	if (isEmpty()) {
 		_pHead = _pa;
 		_pTail = _pa;
 	}
@@ -229,17 +226,14 @@ int L1List<T>::push_back(T& a) {
 /// Return 0 if success, -1 otherwise
 template <class T>
 int L1List<T>::insertHead(T& a) {
-	// TODO: Your code goes here
-	L1Item<T>* _pa = new L1Item<T>;
-	if (!_pHead) {
-		_pa->data = a;
-		_pa->pNext = _pHead;
-		_pHead = _pa;
-	}
-	else {
-		_pa->pNext = NULL;
+	L1Item<T>* _pa = new L1Item<T>(a);
+	if (isEmpty()) {
 		_pHead = _pa;
 		_pTail = _pa;
+	}
+	else {
+		_pa->pNext = _pHead;
+		_pHead = _pa;
 	}
 	_size++;
 	return 0;
@@ -249,39 +243,33 @@ int L1List<T>::insertHead(T& a) {
 /// Return 0 if success, s-1 otherwise
 template <class T>
 int L1List<T>::removeHead() {
-	// TODO: Your code goes here
-	if (_pHead) {
-		L1Item<T>* _pCur = _pHead;
-		_pHead = _pCur->pNext;
+	if (isEmpty()) return -1;
+	L1Item<T>* _pCur = _pHead;
+	_pHead = _pCur->pNext;
 
-		delete _pCur;
-		_pCur = nullptr;
+	delete _pCur;
+	_pCur = nullptr;
 
-		_size--;
-		if (_size == 0) _pTail = nullptr;
-		return 0;
-	}
-	return -1;
+	_size--;
+	if (_size == 0) _pTail = nullptr;
+	return 0;
 }
 
 /// Remove the last item of the list
 /// Return 0 if success, -1 otherwise
 template <class T>
 int L1List<T>::removeLast() {
-	// TODO: Your code goes here
-	if (_pTail) {
-		L1Item<T>* _pCur = _pHead;
-		while (_pCur != _pTail)
-			_pCur = _pCur->pNext;
+	if (isEmpty()) return -1;
+	L1Item<T>* _pCur = _pHead;
+	while (_pCur != _pTail)
+		_pCur = _pCur->pNext;
 
-		delete _pTail;
-		_pTail = nullptr;
+	delete _pTail;
+	_pTail = nullptr;
 
-		_size--;
-		if (_size == 0) _pHead = nullptr;
-		return 0;
-	}
-	return -1;
+	_size--;
+	if (_size == 0) _pHead = nullptr;
+	return 0;
 }
 
 #endif DSA191_A1_DSALIB_H
