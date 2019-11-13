@@ -73,6 +73,14 @@ public:
 
 	void    reverse();
 
+	void    traverse(bool (op)(T&, void*&), void*& pParam) {
+		L1Item<T>* _pCur = _pHead;
+		while (_pCur != NULL) {
+			if ((op)(_pCur->data, pParam)) break;
+			_pCur = _pCur->pNext;
+		}
+		return;
+	}
 	void    traverse(bool (op)(T&, void*&, void*&), void*& pParam_1, void*& pParam_2) {
 		L1Item<T>* _pCur = _pHead;
 		while (_pCur != NULL) {
@@ -89,6 +97,15 @@ public:
 		}
 		return;
 	}
+	void    traverse(bool (op)(T&, void*&, void*&, void*&, void*&), void*& pParam_1, void*& pParam_2, void*& pParam_3, void*& pParam_4) {
+		L1Item<T>* _pCur = _pHead;
+		while (_pCur != NULL) {
+			if ((op)(_pCur->data, pParam_1, pParam_2, pParam_3, pParam_4)) break;
+			_pCur = _pCur->pNext;
+		}
+		return;
+	}
+
 	int get_IDmax() {
 		return id_max;
 	}
@@ -200,6 +217,7 @@ int L1List<T>::remove(int i) {
 		_pCur = _pPre->pNext;
 		_pPre->pNext = _pCur->pNext;
 	}
+	
 	delete _pCur;
 	_size--;
 	return 0;
