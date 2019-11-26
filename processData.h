@@ -43,5 +43,4 @@ void PrintReqOutput(const char* pRequest, T* pOutput, int N) {
     cout << '\n';
 }
 
-
 #endif //DSA191_A1_PROCESSDATA_H

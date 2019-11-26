@@ -53,8 +53,8 @@ void ProcessRequest(const char* pRequest, void* pData, void* &pOutput, int &N) {
 			//CL <city_name>
 
 			pOutput = new int* ();
-			int city_id = Dataset->find_CityID_City_CityName(cell1);
-			*(int*)pOutput = Dataset->count_numLine_Line_CityID(city_id);
+			int city_id = Dataset->find_CityID_City(cell1);
+			*(int*)pOutput = Dataset->count_numLine_Line(city_id);
 
 			N = 1;
 		}
@@ -64,30 +64,30 @@ void ProcessRequest(const char* pRequest, void* pData, void* &pOutput, int &N) {
 		//LSC <city_name>
 		getline(ss, cell1);
 
-		int city_id = Dataset->find_CityID_City_CityName(cell1);
-		pOutput = Dataset->list_StationID_Station_CityID(city_id, N); 
+		int city_id = Dataset->find_CityID_City(cell1);
+		pOutput = Dataset->list_StationID_Station(city_id, N); 
 
 	}
 	else if (request == "LLC") {
 		//LLC <city_name>
 		getline(ss, cell1);
 
-		int city_id = Dataset->find_CityID_City_CityName(cell1);
-		pOutput = Dataset->list_LineID_Line_CityID(city_id, N);
+		int city_id = Dataset->find_CityID_City(cell1);
+		pOutput = Dataset->list_LineID_Line(city_id, N);
 	}
 	else if (request == "LSL") {
 		//LSL <line_id>
 		ss >> cell1;
 		int line_id = atoi(cell1.c_str());
 
-		pOutput = Dataset->list_StationID_StationLine_LineID(line_id, N);
+		pOutput = Dataset->list_StationID_StationLine(line_id, N);
 	}
 	else if (request == "FC") {
 		//FC <city_name>
 		getline(ss, cell1);
 
 		pOutput = new int* ();
-		*(int*)pOutput = Dataset->find_CityID_City_CityName(cell1);
+		*(int*)pOutput = Dataset->find_CityID_City(cell1);
 
 		N = 1;
 	}
@@ -96,7 +96,7 @@ void ProcessRequest(const char* pRequest, void* pData, void* &pOutput, int &N) {
 		getline(ss, cell1);
 
 		pOutput = new int* ();
-		*(int*)pOutput = Dataset->find_StationID_Station_StationName(cell1);
+		*(int*)pOutput = Dataset->find_StationID_Station(cell1);
 
 		N = 1;
 	}
@@ -107,9 +107,9 @@ void ProcessRequest(const char* pRequest, void* pData, void* &pOutput, int &N) {
 		int station_id = atoi(cell1.c_str());
 		int track_id = atoi(cell2.c_str());
 
-		string point = Dataset->find_StationGeometry_Station_StationID(station_id);
+		string point = Dataset->find_StationGeometry_Station(station_id);
 		pOutput = new int* ();
-		*(int*)pOutput = Dataset->find_StationIDX_Track_StationGeometry_TrackID(point, track_id);
+		*(int*)pOutput = Dataset->find_StationIDX_Track(point, track_id);
 
 		N = 1;
 	}
@@ -129,7 +129,7 @@ void ProcessRequest(const char* pRequest, void* pData, void* &pOutput, int &N) {
 		int station_id = atoi(cell1.c_str());
 
 		pOutput = new int* ();
-		*(int*)pOutput = Dataset->remove_Station_Dataset_StationID(station_id);
+		*(int*)pOutput = Dataset->remove_Station_Dataset(station_id);
 
 		N = 1;
 	}
@@ -141,7 +141,7 @@ void ProcessRequest(const char* pRequest, void* pData, void* &pOutput, int &N) {
 		int station_id = atoi(cell1.c_str());
 		
 		pOutput = new int* ();
-		*(int*)pOutput = Dataset->update_StationID_Station(station_id, cell2);
+		*(int*)pOutput = Dataset->update_Station_Dataset(station_id, cell2);
 		N = 1;
 	}
 	else if (request == "ISL") {
@@ -164,15 +164,19 @@ void ProcessRequest(const char* pRequest, void* pData, void* &pOutput, int &N) {
 		int line_id = atoi(cell2.c_str());
 
 		pOutput = new int* ();
-		*(int*)pOutput = Dataset->remove_Station_StationLine_StationID_LineID(station_id, line_id);
+		*(int*)pOutput = Dataset->remove_Station_StationLine(station_id, line_id);
 		N = 1;
 	}
 	
-	// Added
+	/* Added function */
+
 	else if (request == "ASLP") { 
-		// ASLP
+		// ASLP <choose>
+		ss >> cell1;
+
+		int choose = atoi(cell1.c_str());
 		pOutput = new int* ();
-		*(int*)pOutput = Dataset->ALSP();
+		*(int*)pOutput = Dataset->ASLP(choose);
 		N = 1;
 	}
 }

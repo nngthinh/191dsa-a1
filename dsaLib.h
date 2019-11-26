@@ -73,6 +73,14 @@ public:
 
 	void    reverse();
 
+	void    traverse(bool (op)(T&)) {
+		L1Item<T>* _pCur = _pHead;
+		while (_pCur != NULL) {
+			if ((op)(_pCur->data)) break;
+			_pCur = _pCur->pNext;
+		}
+		return;
+	}
 	void    traverse(bool (op)(T&, void*&), void*& pParam) {
 		L1Item<T>* _pCur = _pHead;
 		while (_pCur != NULL) {
@@ -128,6 +136,7 @@ void L1List<T>::clean() {
 	}
 	_pHead = NULL;
 	_pTail = NULL;
+	_size = 0;
 }
 
 template <class T>
@@ -205,20 +214,23 @@ template <class T>
 int L1List<T>::remove(int i) {
 	if (_size < 0 || i > _size - 1) return -1;
 	L1Item<T>* _pCur, * _pPre;
+
 	if (i == 0) {
-		_pCur = _pHead;
-		_pHead = _pHead->pNext;
+		return removeHead();
 	}
-	else {
-		_pPre = _pHead;
-		for (int j = 0; j < i - 1; j++) {
-			_pPre = _pPre->pNext;
-		}
-		_pCur = _pPre->pNext;
-		_pPre->pNext = _pCur->pNext;
+	if (i == _size - 1) {
+		return removeLast();
 	}
+
+	_pPre = _pHead;
+	for (int j = 0; j < i - 1; j++) {
+		_pPre = _pPre->pNext;
+	}
+	_pCur = _pPre->pNext;
+	_pPre->pNext = _pCur->pNext;
 	
 	delete _pCur;
+
 	_size--;
 	return 0;
 }
@@ -266,10 +278,9 @@ int L1List<T>::removeHead() {
 	_pHead = _pCur->pNext;
 
 	delete _pCur;
-	_pCur = nullptr;
 
 	_size--;
-	if (_size == 0) _pTail = nullptr;
+	if (_size == 0) _pTail = NULL;
 	return 0;
 }
 
@@ -279,14 +290,19 @@ template <class T>
 int L1List<T>::removeLast() {
 	if (isEmpty()) return -1;
 	L1Item<T>* _pCur = _pHead;
-	while (_pCur != _pTail)
+	L1Item<T>* _pPre = NULL;
+	while (_pCur != _pTail) {
+		_pPre = _pCur;
 		_pCur = _pCur->pNext;
+	}
 
-	delete _pTail;
-	_pTail = nullptr;
-
+	_pPre->pNext = NULL;
+	_pTail = _pPre;
+	
+	delete _pCur;
+	
 	_size--;
-	if (_size == 0) _pHead = nullptr;
+	if (_size == 0) _pHead = NULL;
 	return 0;
 }
 
